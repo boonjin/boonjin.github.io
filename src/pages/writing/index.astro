@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="Writing - Boon Jin" description="Writing about AI, EdTech, Deck.Toys, and solo-founder work.">
+  <section class="page-heading">
+    <h1>Writing</h1>
+    <p>Notes on practical AI, EdTech, classroom products, and building as a solo founder.</p>
+  </section>
+
+  <section class="post-list">
+    {posts.map((post) => (
+      <a class="post-row" href={`/writing/${post.slug}/`}>
+        <div>
+          <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-SG', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          })}</time>
+          <h2>{post.data.title}</h2>
+          <p>{post.data.description}</p>
+        </div>
+        <span>{post.data.tags.slice(0, 3).join(' / ')}</span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

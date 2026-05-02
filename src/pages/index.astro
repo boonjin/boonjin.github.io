@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const featured = posts[0];
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>AI, EdTech, and solo-founder notes from Singapore.</h1>
+      <p>
+        I build classroom products used by more than 100,000 teachers worldwide,
+        from Smoothboard to Deck.Toys. I write about practical AI for teachers,
+        EdTech in Southeast Asia, and the work of building useful products.
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="/writing/">Read the writing</a>
+        <a class="button secondary" href="/about/">About Boon Jin</a>
+      </div>
+    </div>
+    <figure class="hero-media">
+      <img src="/images/classroom-ai-singapore.png" alt="A classroom scene with Singapore in the background and a teacher using a connected lesson map." />
+    </figure>
+  </section>
+
+  <section class="section-grid">
+    <div>
+      <p class="section-label">Focus</p>
+      <h2>Practical AI for real classrooms.</h2>
+    </div>
+    <div class="focus-list">
+      <article>
+        <h3>Teacher-controlled AI</h3>
+        <p>AI that reduces lesson prep while keeping teachers in charge of the learning flow.</p>
+      </article>
+      <article>
+        <h3>Classroom engagement</h3>
+        <p>Interactive lessons, student participation, and product choices that work during class.</p>
+      </article>
+      <article>
+        <h3>SEA perspective</h3>
+        <p>Notes from building in Singapore for teachers across Southeast Asia and beyond.</p>
+      </article>
+    </div>
+  </section>
+
+  {featured && (
+    <section class="latest">
+      <p class="section-label">Latest</p>
+      <a class="latest-card" href={`/writing/${featured.slug}/`}>
+        <div>
+          <time datetime={featured.data.date.toISOString()}>{featured.data.date.toLocaleDateString('en-SG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}</time>
+          <h2>{featured.data.title}</h2>
+          <p>{featured.data.description}</p>
+        </div>
+        {featured.data.image && <img src={featured.data.image} alt="" loading="lazy" />}
+      </a>
+    </section>
+  )}
+</BaseLayout>
