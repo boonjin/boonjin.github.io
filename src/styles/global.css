@@ -353,9 +353,16 @@ main {
   margin: 0;
 }
 
-.site-footer a {
+.site-footer a,
+.footer-links a {
   font-weight: 750;
   color: var(--accent);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 @media (max-width: 820px) {

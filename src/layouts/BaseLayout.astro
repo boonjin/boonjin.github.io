@@ -45,7 +45,13 @@ const socialImage = new URL(image, site.url).toString();
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         {site.nav.map((item) => (
-          <a href={item.href}>{item.label}</a>
+          <a
+            href={item.href}
+            target={item.href.startsWith('http') ? '_blank' : undefined}
+            rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+          >
+            {item.label}
+          </a>
         ))}
       </nav>
     </header>
@@ -54,7 +60,12 @@ const socialImage = new URL(image, site.url).toString();
     </main>
     <footer class="site-footer">
       <p>Practical AI, EdTech, and solo-founder notes from Singapore.</p>
-      <a href="/rss.xml">RSS</a>
+      <div class="footer-links">
+        {site.social.map((item) => (
+          <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
+        ))}
+        <a href="/rss.xml">RSS</a>
+      </div>
     </footer>
   </body>
 </html>

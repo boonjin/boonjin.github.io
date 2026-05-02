@@ -9,6 +9,10 @@ export const site = {
     { href: '/', label: 'Home' },
     { href: '/writing/', label: 'Writing' },
     { href: '/about/', label: 'About' },
-    { href: 'https://deck.toys', label: 'Deck.Toys' }
+    { href: 'https://deck.toys', label: 'Deck.Toys' },
+    { href: 'https://www.linkedin.com/in/boonjin/', label: 'LinkedIn' }
+  ],
+  social: [
+    { href: 'https://www.linkedin.com/in/boonjin/', label: 'LinkedIn' }
   ]
 };
