@@ -3,7 +3,6 @@ title: "Building Practical AI for Teachers"
 description: "A first note on AI, EdTech, Smoothboard, Deck.Toys, and building classroom products from Singapore."
 date: 2026-05-02
 tags: ["AI", "EdTech", "Deck.Toys", "Singapore", "Solo Founder"]
-image: "/images/classroom-ai-singapore.png"
 draft: false
 ---
 

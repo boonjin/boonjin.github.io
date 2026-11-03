@@ -7,26 +7,26 @@ const posts = (await getCollection('posts'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<BaseLayout title="Writing - Boon Jin" description="Writing about AI, EdTech, Deck.Toys, and solo-founder work.">
-  <section class="page-heading">
-    <h1>Writing</h1>
-    <p>Notes on practical AI, EdTech, classroom products, and building as a solo founder.</p>
-  </section>
-
-  <section class="post-list">
-    {posts.map((post) => (
-      <a class="post-row" href={`/writing/${post.slug}/`}>
-        <div>
-          <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-SG', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          })}</time>
-          <h2>{post.data.title}</h2>
-          <p>{post.data.description}</p>
-        </div>
-        <span>{post.data.tags.slice(0, 3).join(' / ')}</span>
-      </a>
-    ))}
-  </section>
+<BaseLayout title="Notes, Boon Jin" description="Notes on practical AI for teachers, classroom products, Deck.Toys and building as a solo founder.">
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Notes</h1>
+      <p>Short notes on building Deck.Toys and AI for teachers.</p>
+    </header>
+    <ul class="note-list">
+      {posts.map((post) => (
+        <li>
+          <a class="note-link" href={`/writing/${post.slug}/`}>
+            <time datetime={post.data.date.toISOString()}>
+              {post.data.date.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </time>
+            <div>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
 </BaseLayout>

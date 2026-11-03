@@ -1,0 +1,114 @@
+---
+import { leafPaths } from '../../lib/door';
+
+interface Props {
+  variant: 'rail' | 'hero' | 'exit';
+}
+
+const { variant } = Astro.props;
+const leaf = leafPaths(0);
+const clip = `door-opening-${variant}`;
+
+// A chain slung frame to frame, sagging under four padlocks.
+const [x0, x1, top, sag] = [67, 253, 150, 168];
+const mid = (x0 + x1) / 2;
+const half = (x1 - x0) / 2;
+const curve = (x: number) => top + sag * (1 - ((x - mid) / half) ** 2);
+const slope = (x: number) => (-2 * sag * (x - mid)) / half ** 2;
+
+const links: { x: string; y: string; a: string; flat: boolean }[] = [];
+for (let x = x0 + 4, i = 0; x < x1 - 2; i++) {
+  const m = slope(x);
+  links.push({ x: x.toFixed(1), y: curve(x).toFixed(1), a: ((Math.atan(m) * 180) / Math.PI).toFixed(1), flat: i % 2 === 0 });
+  x += 7.2 / Math.sqrt(1 + m * m);
+}
+
+const labels = ['Smoothboard', 'Smoothboard Air', 'Deck.Toys', 'AI in Deck.Toys'];
+const locks = [0.2, 0.4, 0.6, 0.8].map((t, i) => {
+  const x = x0 + (x1 - x0) * t;
+  return { n: i + 1, x, y: curve(x), label: labels[i] };
+});
+---
+
+<div class={`door door--${variant}`} data-door>
+  <svg class="door-svg" viewBox="0 0 320 560" role="img" aria-label="A door held shut by a chain and four padlocks">
+    <defs>
+      <clipPath id={clip}><rect x="74" y="54" width="172" height="466" /></clipPath>
+    </defs>
+    <g class="door-ink" filter="url(#ink)">
+      <rect class="door-wall" x="0" y="0" width="320" height="520" fill="url(#hatch-wide)" mask="url(#vignette)" />
+      <rect class="door-floor" x="0" y="520" width="320" height="40" fill="url(#hatch)" opacity="0.45" mask="url(#vignette)" />
+
+      <g clip-path={`url(#${clip})`}>
+        <rect class="fill-paper" x="74" y="54" width="172" height="466" />
+        <g class="door-outside line-thin">
+          <path d="M74 330 Q 104 314 134 326 T 196 321 T 246 314" />
+          <line x1="74" y1="336" x2="246" y2="336" />
+          <path d="M126 520 L158 336 M208 520 L164 336" />
+          <path class="dash" d="M167 520 L161 340" />
+          <circle class="sun" cx="204" cy="292" r="17" />
+          <path d="M104 214 l5 4 l5 -4 M118 200 l4 3 l4 -3" />
+          <path d="M92 380 v-6 M100 398 v-7 M228 372 v-6 M220 410 v-8 M236 452 v-8" />
+        </g>
+      </g>
+      <path class="door-light" d="M74 520 L246 520 L314 560 L6 560 Z" />
+
+      <g class="line">
+        <path d="M52 520 V32 H268 V520" />
+        <path d="M60 520 V40 H260 V520" />
+        <path d="M74 520 V54 H246 V520" />
+        <path class="fill-hatch" d="M60 520 V40 H260 V520 H246 V54 H74 V520 Z" opacity="0.35" />
+        <line class="line-bold" x1="40" y1="520" x2="280" y2="520" />
+      </g>
+
+      <g class="door-leaf line">
+        <path class="fill-paper2" data-leaf="leaf" d={leaf.leaf} />
+        <path class="fill-hatch" data-leaf="moulding" d={leaf.moulding} fill-rule="evenodd" opacity="0.55" />
+        <path data-leaf="panels" d={leaf.panels} />
+        <path class="line-thin" data-leaf="bevels" d={leaf.bevels} />
+        <path class="fill-paper" data-leaf="plate" d={leaf.plate} />
+        <ellipse class="fill-paper" data-leaf="knob" cx={leaf.knob.cx} cy={leaf.knob.cy} rx={leaf.knob.rx} ry={leaf.knob.ry} />
+        <path class="fill-hatch door-shade" data-leaf="shade" d={leaf.leaf} opacity="0" />
+        <rect x="70" y="92" width="7" height="22" rx="1" class="fill-paper2" />
+        <rect x="70" y="462" width="7" height="22" rx="1" class="fill-paper2" />
+      </g>
+
+      <g class="door-chain line">
+        <circle class="fill-paper2" cx={x0} cy={top} r="4" />
+        <circle class="fill-paper2" cx={x1} cy={top} r="4" />
+        {links.map((l) => (
+          <ellipse cx={l.x} cy={l.y} rx="4.4" ry={l.flat ? 2.5 : 0.9} transform={`rotate(${l.a} ${l.x} ${l.y})`} />
+        ))}
+      </g>
+
+      {locks.map((l) => (
+        <g transform={`translate(${l.x.toFixed(1)} ${(l.y - 1).toFixed(1)})`}>
+          <g class="padlock" data-padlock={l.n}>
+            <g class="padlock-shackle">
+              <path class="tube-outer" d="M-6.5 14 V9 A6.5 6.5 0 0 1 6.5 9 V14" />
+              <path class="tube-inner" d="M-6.5 14 V9 A6.5 6.5 0 0 1 6.5 9 V14" />
+            </g>
+            <rect class="fill-paper2 line" x="-11" y="13" width="22" height="21" rx="3" />
+            <path class="fill-hatch" d="M4 13 H8 A3 3 0 0 1 11 16 V31 A3 3 0 0 1 8 34 H4 Z" />
+            <circle class="fill-ink" cx="0" cy="20" r="2.1" />
+            <path class="fill-ink" d="M-1 21 L-1.8 26 H1.8 L1 21 Z" />
+            <text class="padlock-no" x="-6.5" y="31.5">{l.n}</text>
+          </g>
+        </g>
+      ))}
+
+      <g class="exit-sign">
+        <rect x="134" y="8" width="52" height="18" rx="2" />
+        <text x="160" y="20.5">EXIT</text>
+      </g>
+    </g>
+  </svg>
+  {variant === 'rail' && locks.map((l) => (
+    <a
+      class="door-hit"
+      href={`#lock-${l.n}`}
+      style={`left:${((l.x / 320) * 100).toFixed(2)}%;top:${(((l.y + 22) / 560) * 100).toFixed(2)}%`}
+      aria-label={`Lock ${l.n}: ${l.label}`}
+    ></a>
+  ))}
+</div>

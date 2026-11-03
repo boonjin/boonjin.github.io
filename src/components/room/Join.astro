@@ -1,0 +1,70 @@
+---
+import QRCode from 'qrcode';
+
+// A real code: scan it from a desktop screen and the phone opens this site.
+const { modules } = QRCode.create('https://boonjin.com', { errorCorrectionLevel: 'L' });
+const m = 2.6;
+const [qx, qy] = [114, 36];
+let qr = '';
+for (let r = 0; r < modules.size; r++) {
+  for (let c = 0; c < modules.size; c++) {
+    if (modules.get(r, c)) qr += `M${(qx + c * m).toFixed(1)} ${(qy + r * m).toFixed(1)}h${m}v${m}h-${m}z`;
+  }
+}
+const qrCenter = [qx + (modules.size * m) / 2, qy + (modules.size * m) / 2];
+
+// Each phone that joins adds one stroke. Together they draw the key.
+const strokes = [
+  'M231 80 A15 15 0 1 1 201 80 A15 15 0 1 1 231 80 M221 80 A5 5 0 1 1 211 80 A5 5 0 1 1 221 80',
+  'M231 80 H285',
+  'M285 80 V95 H278 V89 H271 V96 H264 V80'
+];
+const phones = [
+  { x: 120, r: -7 },
+  { x: 200, r: 2 },
+  { x: 280, r: 7 }
+];
+const py = 212;
+---
+
+<div class="fig-art fig-join" data-puzzle="join">
+  <svg viewBox="0 0 400 290" aria-hidden="true">
+    <g filter="url(#ink)">
+      <text class="fig-no" x="14" y="20">FIG. 2</text>
+      <rect class="fill-paper2 line" x="96" y="14" width="208" height="132" rx="3" />
+      <rect class="fill-paper line" x="102" y="20" width="196" height="120" />
+      <rect class="fill-paper2 line" x="148" y="146" width="104" height="6" rx="1" />
+      <text class="screen-note" x={qrCenter[0]} y="117">scan to join</text>
+      {strokes.map((d, i) => <path class="key-stroke line-bold" data-stroke={i} d={d} pathLength="1" />)}
+
+      <g class="line-thin sightline">
+        {phones.map((p, i) => <line data-sight={i} x1={p.x} y1={py - 44} x2={qrCenter[0]} y2={qrCenter[1] + 18} />)}
+      </g>
+
+      {phones.map((p, i) => (
+        <g transform={`translate(${p.x} ${py}) rotate(${p.r})`}>
+          <g class="phone" data-phone={i}>
+            <rect class="fill-paper2 line" x="-22" y="-40" width="44" height="80" rx="7" />
+            <path class="fill-hatch" d="M15 -40 A7 7 0 0 1 22 -33 V33 A7 7 0 0 1 15 40 Z" />
+            <rect class="fill-paper line-thin" x="-18" y="-29" width="36" height="52" rx="1.5" />
+            <rect class="line-thin" x="-5" y="-35" width="10" height="1.8" rx="0.9" />
+            <circle class="line-thin" cy="32" r="3.6" />
+            <path class="phone-finder line-thin" d="M-12 -15 v-5 h5 M7 -20 h5 v5 M12 5 v5 h-5 M-7 10 h-5 v-5" />
+            <line class="phone-scan" x1="-15" x2="15" y1="-22" y2="-22" />
+            <path class="phone-check" d="M-8 -4 L-2 3 L9 -10" pathLength="1" />
+          </g>
+        </g>
+      ))}
+    </g>
+    <path class="qr" d={qr} />
+  </svg>
+  {phones.map((p, i) => (
+    <button
+      class="hit hit--phone"
+      type="button"
+      data-hit={i}
+      style={`left:${((p.x / 400) * 100).toFixed(2)}%;top:${((py / 290) * 100).toFixed(2)}%`}
+      aria-label={`Phone ${i + 1}: scan the code`}
+    ></button>
+  ))}
+</div>

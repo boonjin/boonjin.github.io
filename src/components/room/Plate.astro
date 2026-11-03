@@ -1,0 +1,29 @@
+---
+interface Props {
+  n: number;
+  year: string;
+  title: string;
+  steps: number;
+  hint: string;
+}
+
+const { n, year, title, steps, hint } = Astro.props;
+---
+
+<section class="plate" id={`lock-${n}`} data-lock={n} data-steps={steps} aria-labelledby={`lock-${n}-title`}>
+  <p class="plate-year">{year}<span class="stamp" aria-hidden="true">Open</span></p>
+  <h2 id={`lock-${n}-title`}>{title}</h2>
+  <p class="plate-line"><slot name="line" /></p>
+  <figure class="fig" data-fig>
+    <slot />
+    <figcaption class="fig-cap">
+      <svg class="mini-lock" viewBox="0 0 14 16" aria-hidden="true">
+        <path class="mini-lock-shackle" d="M3.5 7.5 V5 a3.5 3.5 0 0 1 7 0 V7.5" />
+        <rect x="1.5" y="7" width="11" height="8" rx="1.5" />
+      </svg>
+      <span class="fig-hint" data-hint aria-live="polite">{hint}</span>
+      <span class="fig-count" data-count>0/{steps}</span>
+    </figcaption>
+    <i class="crop crop--tl"></i><i class="crop crop--tr"></i><i class="crop crop--bl"></i><i class="crop crop--br"></i>
+  </figure>
+</section>

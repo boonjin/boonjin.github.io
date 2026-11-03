@@ -3,29 +3,27 @@ import BaseLayout from './BaseLayout.astro';
 
 const { post } = Astro.props;
 const { Content } = await post.render();
-const title = `${post.data.title} - Boon Jin`;
+const title = `${post.data.title}, Boon Jin`;
 ---
 
 <BaseLayout title={title} description={post.data.description} image={post.data.image}>
-  <article class="post-shell">
-    <header class="post-header">
-      <a class="back-link" href="/writing/">Writing</a>
+  <div class="wrap">
+    <article class="post">
+      <a class="post-back" href="/writing/">All notes</a>
       <h1>{post.data.title}</h1>
-      <p>{post.data.description}</p>
-      <div class="post-meta">
-        <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-SG', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })}</time>
-        <span>{post.data.tags.join(' / ')}</span>
+      <p class="post-meta">
+        <time datetime={post.data.date.toISOString()}>
+          {post.data.date.toLocaleDateString('en-SG', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </time>
+      </p>
+      {post.data.image && (
+        <figure class="post-figure">
+          <img src={post.data.image} alt="" loading="eager" />
+        </figure>
+      )}
+      <div class="prose">
+        <Content />
       </div>
-    </header>
-    {post.data.image && (
-      <img class="post-image" src={post.data.image} alt="" loading="eager" />
-    )}
-    <div class="prose">
-      <Content />
-    </div>
-  </article>
+    </article>
+  </div>
 </BaseLayout>

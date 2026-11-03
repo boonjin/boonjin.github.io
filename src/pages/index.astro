@@ -1,17 +1,123 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0;url=https://www.linkedin.com/in/boonjin" />
-    <link rel="canonical" href="https://www.linkedin.com/in/boonjin" />
-    <meta name="robots" content="noindex, follow" />
-    <title>Boon Jin on LinkedIn</title>
-    <script is:inline>
-      window.location.replace('https://www.linkedin.com/in/boonjin');
-    </script>
-  </head>
-  <body>
-    <p><a href="https://www.linkedin.com/in/boonjin">Continue to Boon Jin’s LinkedIn profile</a></p>
-  </body>
-</html>
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InkDefs from '../components/room/InkDefs.astro';
+import Door from '../components/room/Door.astro';
+import Plate from '../components/room/Plate.astro';
+import Calibrate from '../components/room/Calibrate.astro';
+import Join from '../components/room/Join.astro';
+import Path from '../components/room/Path.astro';
+import Reader from '../components/room/Reader.astro';
+import { site } from '../data/site';
+
+const keys = [
+  { dir: 'left', label: 'Left', r: -90 },
+  { dir: 'up', label: 'Up', r: 0 },
+  { dir: 'down', label: 'Down', r: 180 },
+  { dir: 'right', label: 'Right', r: 90 }
+];
+---
+
+<BaseLayout home>
+  <div class="status" slot="bar">
+    <ol class="status-locks" aria-label="Locks">
+      {[1, 2, 3, 4].map((n) => (
+        <li data-status-lock={n}>
+          <a href={`#lock-${n}`} aria-label={`Lock ${n}`}>
+            <svg class="mini-lock" viewBox="0 0 14 16" aria-hidden="true">
+              <path class="mini-lock-shackle" d="M3.5 7.5 V5 a3.5 3.5 0 0 1 7 0 V7.5" />
+              <rect x="1.5" y="7" width="11" height="8" rx="1.5" />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ol>
+    <span class="status-timer" data-timer role="timer" aria-label="Time in the room">0:00</span>
+    <a class="status-skip" href="#exit" data-skip>Skip to exit</a>
+  </div>
+
+  <InkDefs />
+
+  <div class="room">
+    <div class="rail">
+      <div class="rail-sticky"><Door variant="rail" /></div>
+    </div>
+
+    <div class="track">
+      <header class="hero">
+        <h1>Boon Jin</h1>
+        <p class="hero-line">
+          Product engineer and founder in Singapore. I’ve built three classroom products end to end, from first sketch to
+          100,000+&nbsp;teachers.
+        </p>
+        <Door variant="hero" />
+        <div class="hero-start">
+          <p class="hero-hint">Four locks to the exit.</p>
+          <div class="hero-actions">
+            <button class="btn" type="button" data-start="play">Try the locks</button>
+            <button class="btn btn--ghost" type="button" data-start="tour">Solve them for me</button>
+          </div>
+        </div>
+      </header>
+
+      <Plate n={1} year="2008" title="Smoothboard" steps={4} hint="Tap the targets in order">
+        <Fragment slot="line">A Wii Remote and any projector, turned into an interactive whiteboard.</Fragment>
+        <Calibrate />
+      </Plate>
+
+      <Plate n={2} year="2012" title="Smoothboard Air" steps={3} hint="Tap each phone to join">
+        <Fragment slot="line">Phones join the board by QR code and draw on it together. Nothing to install.</Fragment>
+        <Join />
+      </Plate>
+
+      <Plate n={3} year="2018" title="Deck.Toys" steps={4} hint="Enter the route on the map">
+        <Fragment slot="line">Lessons as paths with locks. Students open each step by showing they get it.</Fragment>
+        <Path />
+        <div class="keypad" role="group" aria-label="Direction lock" data-keypad>
+          {keys.map((k) => (
+            <button type="button" data-key={k.dir} aria-label={k.label}>
+              <svg viewBox="-10 -10 20 20" aria-hidden="true">
+                <path d="M0 7 V-7 M-4.5 -2.5 L0 -7 L4.5 -2.5" transform={`rotate(${k.r})`} />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </Plate>
+
+      <Plate n={4} year="Now" title="AI in Deck.Toys" steps={1} hint="Any words will do">
+        <Fragment slot="line">
+          Generative lesson tools, and small decision models for fast judgment calls. This lock simulates one, so it reads
+          for meaning, not exact words.
+        </Fragment>
+        <Reader />
+      </Plate>
+
+      <section class="exit" id="exit" aria-labelledby="exit-title">
+        <Door variant="exit" />
+        <figure class="portrait">
+          {site.photo ? (
+            <img src={site.photo} alt="Boon Jin" width="720" height="720" loading="lazy" />
+          ) : (
+            <div class="portrait-empty" role="img" aria-label="Photo placeholder"><span>Photo</span></div>
+          )}
+        </figure>
+        <div class="exit-body">
+          <h2 id="exit-title">Next room?</h2>
+          <p class="exit-links">
+            <a class="btn" href={site.linkedin}>LinkedIn <span aria-hidden="true">↗</span></a>
+            <a href="/writing/">Notes</a>
+            <a href={site.deckToys}>Deck.Toys</a>
+          </p>
+          <div class="exit-game">
+            <p class="exit-stat" data-stat aria-live="polite"></p>
+            <button class="btn btn--ghost" type="button" data-again hidden>Play again</button>
+            <button class="btn btn--ghost" type="button" data-finish hidden>Open the rest</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/room';
+</script>

@@ -1,0 +1,96 @@
+---
+import { squareToQuad } from '../../lib/homography';
+
+// The projected screen, seen from the right of the room.
+const screen = [[64, 52], [290, 26], [290, 200], [64, 180]];
+const map = squareToQuad(screen);
+const pt = (u: number, v: number) => map(u, v).map((n) => n.toFixed(1)).join(' ');
+const quad = (k: number) => 'M' + [[-k, -k], [1 + k, -k], [1 + k, 1 + k], [-k, 1 + k]].map(([u, v]) => pt(u, v)).join('L') + 'Z';
+
+const inset = 0.1;
+const targets = [[inset, inset], [1 - inset, inset], [1 - inset, 1 - inset], [inset, 1 - inset]].map(([u, v]) => map(u, v));
+
+// A test scribble written on the wall once the pen is calibrated, in the screen's perspective.
+const loops: string[] = [];
+for (let i = 0; i <= 220; i++) {
+  const s = i / 220;
+  const t = s * Math.PI * 2 * 5;
+  loops.push(pt(0.24 + 0.52 * s - 0.04 * Math.sin(t), 0.5 - 0.12 * Math.cos(t) + 0.04 * s));
+}
+const scribble = 'M' + loops.join('L');
+const underline = `M${pt(0.26, 0.74)} Q ${pt(0.5, 0.7)} ${pt(0.78, 0.72)}`;
+
+const camera = [318, 222];
+const corners = [[-0.03, -0.04], [1.03, -0.04], [1.03, 1.04], [-0.03, 1.04]].map(([u, v]) => map(u, v));
+const rest = [350, 118];
+---
+
+<div class="fig-art fig-calibrate" data-puzzle="calibrate" data-targets={JSON.stringify(targets)} data-rest={JSON.stringify(rest)}>
+  <svg viewBox="0 0 400 280" aria-hidden="true">
+    <g filter="url(#ink)">
+      <text class="fig-no" x="14" y="20">FIG. 1</text>
+
+      <g class="line-thin sightline">
+        {corners.map(([x, y]) => <line x1={camera[0]} y1={camera[1]} x2={x.toFixed(1)} y2={y.toFixed(1)} />)}
+      </g>
+
+      <path class="fill-paper2 line" d={quad(0.04)} />
+      <path class="fill-hatch" d={quad(0.04) + quad(0)} fill-rule="evenodd" opacity="0.6" />
+      <path class="fill-paper line" d={quad(0)} />
+      <text class="screen-note" x={map(0.5, 0.5)[0].toFixed(1)} y={(map(0.5, 0.5)[1] + 3).toFixed(1)}>calibrating</text>
+      <path class="scribble line" d={scribble} pathLength="1" />
+      <path class="scribble scribble--late line" d={underline} pathLength="1" />
+
+      {targets.map(([x, y], i) => (
+        <g class="target" data-target={i} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}>
+          <circle class="target-pulse" r="9" />
+          <circle class="target-ring" r="7" />
+          <path class="target-cross" d="M-11 0 H-3 M3 0 H11 M0 -11 V-3 M0 3 V11" />
+          <circle class="target-dot" r="2.4" />
+        </g>
+      ))}
+
+      <line class="line" x1="10" y1="268" x2="390" y2="268" />
+      <path d="M300 268 L330 252 L384 262 L376 268 Z" fill="url(#hatch)" opacity="0.5" />
+
+      <g transform={`translate(${camera[0]} ${camera[1]}) rotate(40)`} class="line">
+        <rect class="fill-paper2" x="0" y="-7.5" width="64" height="15" rx="6" />
+        <rect x="1" y="1.5" width="62" height="6" rx="3.5" fill="url(#hatch)" stroke="none" opacity="0.7" />
+        <rect class="fill-ink" x="0.8" y="-4.5" width="3" height="9" rx="1" />
+        <path class="line-bold" d="M9 0 H15 M12 -3 V3" />
+        <circle class="fill-paper" cx="22" cy="0" r="3.2" />
+        <circle cx="33" cy="0" r="1.2" />
+        <circle cx="46" cy="0" r="2.1" />
+        <circle cx="53" cy="0" r="2.1" />
+        <path class="line-thin" d="M60 -3 v0.1 M60 -1 v0.1 M60 1 v0.1 M60 3 v0.1" />
+      </g>
+      <g class="callout">
+        <path class="line-thin" d="M318 236 L300 250 H292" />
+        <text x="288" y="253">Wii Remote</text>
+      </g>
+
+      <g class="pen" data-pen style={`transform: translate(${rest[0]}px, ${rest[1]}px)`}>
+        <circle class="pen-ring" r="4" />
+        <g transform="rotate(-48)" class="line">
+          <path class="fill-paper2" d="M0 0 L8 -3.4 H50 a3.4 3.4 0 0 1 0 6.8 H8 Z" />
+          <path class="line-thin" d="M12 -3.4 V3.4 M44 -3.4 V3.4" />
+          <rect x="16" y="-3.4" width="26" height="3" fill="url(#hatch)" stroke="none" />
+        </g>
+        <circle class="pen-led" r="1.7" />
+      </g>
+      <g class="callout callout--pen">
+        <text x="390" y="62">IR pen</text>
+        <path class="line-thin" d="M378 67 L374 82" />
+      </g>
+    </g>
+  </svg>
+  {targets.map(([x, y], i) => (
+    <button
+      class="hit hit--target"
+      type="button"
+      data-hit={i}
+      style={`left:${((x / 400) * 100).toFixed(2)}%;top:${((y / 280) * 100).toFixed(2)}%`}
+      aria-label={`Calibration target ${i + 1} of 4`}
+    ></button>
+  ))}
+</div>

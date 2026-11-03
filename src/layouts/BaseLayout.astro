@@ -1,18 +1,19 @@
 ---
 import { site } from '../data/site';
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  home?: boolean;
 }
 
-const {
-  title = site.title,
-  description = site.description,
-  image = '/images/classroom-ai-singapore.png'
-} = Astro.props;
+const { title = site.title, description = site.description, image = '/og.png', home = false } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, site.url).toString();
 const socialImage = new URL(image, site.url).toString();
@@ -25,47 +26,49 @@ const socialImage = new URL(image, site.url).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={site.author} />
+    <meta name="theme-color" content="#f2ede3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171614" media="(prefers-color-scheme: dark)" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href="/rss.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name}, notes`} href="/rss.xml" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="Boon Jin home">
-        <span class="brand-mark">BJ</span>
-        <span>Boon Jin</span>
-      </a>
-      <nav class="site-nav" aria-label="Main navigation">
-        {site.nav.map((item) => (
-          <a
-            href={item.href}
-            target={item.href.startsWith('http') ? '_blank' : undefined}
-            rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
+  <body class={home ? 'is-home' : undefined}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <a class="wordmark" href="/">Boon Jin</a>
+      <slot name="bar">
+        <nav class="topnav" aria-label="Main">
+          <a href="/writing/">Notes</a>
+          <a href={site.linkedin}>LinkedIn</a>
+        </nav>
+      </slot>
     </header>
-    <main>
+    <main id="main">
       <slot />
     </main>
-    <footer class="site-footer">
-      <p>Practical AI, EdTech, and solo-founder notes from Singapore.</p>
-      <div class="footer-links">
-        {site.social.map((item) => (
-          <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
-        ))}
-        <a href="/rss.xml">RSS</a>
-      </div>
-    </footer>
+    {!home && (
+      <footer class="footer">
+        <p>© {new Date().getFullYear()} Boon Jin</p>
+        <nav aria-label="Elsewhere">
+          <a href="/writing/">Notes</a>
+          <a href={site.linkedin}>LinkedIn</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+      </footer>
+    )}
   </body>
 </html>

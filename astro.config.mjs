@@ -2,5 +2,9 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://boonjin.com',
-  output: 'static'
+  output: 'static',
+  devToolbar: { enabled: false },
+  redirects: {
+    '/about': '/#exit'
+  }
 });

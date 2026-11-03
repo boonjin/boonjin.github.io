@@ -1,0 +1,77 @@
+---
+// A lesson path on a folded map, and a direction lock that wants the route.
+const stops = [
+  [46, 214],
+  [46, 82],
+  [146, 82],
+  [146, 214],
+  [214, 214]
+];
+const legs = [
+  'M46 202 C 40 170, 52 130, 46 94',
+  'M58 82 C 85 76, 110 88, 134 82',
+  'M146 94 C 152 130, 140 170, 146 202',
+  'M158 214 C 175 208, 190 220, 202 214'
+];
+
+// Map edge, torn by a seeded hand.
+let seed = 11;
+const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 2;
+const edge: string[] = [];
+const ring = [[14, 22], [236, 22], [236, 252], [14, 252]];
+ring.forEach(([x, y], i) => {
+  const [nx, ny] = ring[(i + 1) % 4];
+  for (let s = 0; s < 1; s += 0.08) edge.push(`${(x + (nx - x) * s + rand() * 1.4).toFixed(1)} ${(y + (ny - y) * s + rand() * 1.4).toFixed(1)}`);
+});
+const map = 'M' + edge.join('L') + 'Z';
+const slots = [0, 1, 2, 3].map((i) => 292.5 + i * 21);
+---
+
+<div class="fig-art fig-path" data-puzzle="path" data-stops={JSON.stringify(stops)}>
+  <svg viewBox="0 0 400 270" aria-hidden="true">
+    <g filter="url(#ink)">
+      <text class="fig-no" x="14" y="14">FIG. 3</text>
+      <path class="fill-paper line" d={map} />
+      <line class="line-faint" x1="125" y1="24" x2="125" y2="250" />
+      <rect x="125" y="24" width="12" height="226" fill="url(#hatch-wide)" opacity="0.5" />
+
+      <g class="compass line-thin">
+        <path class="fill-ink" d="M210 40 L214 56 L210 52 L206 56 Z" />
+        <path d="M210 56 L214 60 L210 72 L206 60 Z" />
+        <text x="210" y="36">N</text>
+      </g>
+
+      {legs.map((d, i) => <path class="leg" data-leg={i} d={d} />)}
+      {stops.map(([x, y], i) => (
+        <g class="stop" data-stop={i} transform={`translate(${x} ${y})`}>
+          <circle class="fill-paper2 line" r="10" />
+          {i === 0 && <path class="line-thin" d="M-3 5 V-6 L5 -3 L-3 0" />}
+          {i > 0 && i < 4 && <text class="stop-no" y="3">{i}</text>}
+          {i === 4 && <path class="fill-ink" d="M0 -6 L1.8 -1.8 L6 -1.6 L2.8 1.2 L3.8 5.6 L0 3.2 L-3.8 5.6 L-2.8 1.2 L-6 -1.6 L-1.8 -1.8 Z" />}
+        </g>
+      ))}
+      <g class="walker" data-walker style={`transform: translate(${stops[0][0]}px, ${stops[0][1]}px)`}>
+        <circle class="walker-dot" r="4.2" cx="10" cy="-10" />
+      </g>
+
+      <g class="dlock" data-dlock>
+        <g class="dlock-shackle">
+          <path class="tube-outer tube-outer--big" d="M292 128 V66 A32 32 0 0 1 356 66 V98" />
+          <path class="tube-inner tube-inner--big" d="M292 128 V66 A32 32 0 0 1 356 66 V98" />
+        </g>
+        <rect class="fill-paper2 line" x="270" y="92" width="108" height="150" rx="12" />
+        <path class="fill-hatch" d="M358 92 H366 A12 12 0 0 1 378 104 V230 A12 12 0 0 1 366 242 H358 Z" />
+        <rect class="fill-paper line" x="282" y="108" width="84" height="30" rx="4" />
+        <path class="line-thin" d="M303 110 V136 M324 110 V136 M345 110 V136" />
+        {slots.map((x, i) => <path class="slot-arrow" data-slot={i} d="M0 7 V-7 M-4.5 -2.5 L0 -7 L4.5 -2.5" transform={`translate(${x} 123)`} />)}
+        <g class="dpad line">
+          <path data-dir="up" d="M324 160 l7 10 h-14 z" />
+          <path data-dir="down" d="M324 212 l7 -10 h-14 z" />
+          <path data-dir="left" d="M298 186 l10 -7 v14 z" />
+          <path data-dir="right" d="M350 186 l-10 -7 v14 z" />
+          <circle class="fill-paper" cx="324" cy="186" r="6" />
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>

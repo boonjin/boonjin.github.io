@@ -1,0 +1,56 @@
+---
+const options = [
+  { key: 'wii_remote', label: 'Wii Remote' },
+  { key: 'phone', label: 'Phone' },
+  { key: 'lock', label: 'Lock' },
+  { key: 'none', label: 'None of these' }
+];
+---
+
+<div class="fig-art fig-reader" data-puzzle="reader">
+  <span class="fig-no fig-no--html">FIG. 4</span>
+  <div class="card">
+    <svg class="card-pin" viewBox="0 0 20 20" aria-hidden="true">
+      <circle class="fill-red line" cx="10" cy="9" r="6" />
+      <circle class="fill-paper" cx="8" cy="7" r="1.6" />
+    </svg>
+    <svg class="card-lock" viewBox="-14 -2 28 38" aria-hidden="true">
+      <g class="padlock">
+        <g class="padlock-shackle">
+          <path class="tube-outer" d="M-6.5 14 V9 A6.5 6.5 0 0 1 6.5 9 V14" />
+          <path class="tube-inner" d="M-6.5 14 V9 A6.5 6.5 0 0 1 6.5 9 V14" />
+        </g>
+        <rect class="fill-paper2 line" x="-11" y="13" width="22" height="21" rx="3" />
+        <path class="fill-hatch" d="M4 13 H8 A3 3 0 0 1 11 16 V31 A3 3 0 0 1 8 34 H4 Z" />
+        <circle class="fill-ink" cx="0" cy="20" r="2.1" />
+        <path class="fill-ink" d="M-1 21 L-1.8 26 H1.8 L1 21 Z" />
+      </g>
+    </svg>
+    <p class="card-q" id="reader-q">Name one thing in this room that became a classroom tool.</p>
+    <form class="card-form" data-form>
+      <input
+        id="reader-answer"
+        name="answer"
+        type="text"
+        maxlength="80"
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="go"
+        aria-labelledby="reader-q"
+        placeholder="In your own words"
+        data-input
+      />
+      <button type="submit" data-submit>Try</button>
+    </form>
+  </div>
+  <ol class="bars" data-bars aria-label="What the model heard">
+    {options.map((o) => (
+      <li data-bar={o.key}>
+        <span class="bar-label">{o.label}</span>
+        <span class="bar"><span class="bar-fill"></span></span>
+        <span class="bar-val">–</span>
+      </li>
+    ))}
+  </ol>
+  <p class="reader-meta" data-meta aria-live="polite">Simulated decision model</p>
+</div>
